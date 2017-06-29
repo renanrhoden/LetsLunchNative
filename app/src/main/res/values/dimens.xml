@@ -5,4 +5,7 @@
     <dimen name="toolbar_text_padding_bottom">10dp</dimen>
     <dimen name="restaurant_info_margin">20dp</dimen>
     <dimen name="restaurant_info_height">40dp</dimen>
+    <dimen name="restaurant_name_size">20sp</dimen>
+    <dimen name="restaurant_info_padding_start">10dp</dimen>
+    <dimen name="restaurant_address_size">15sp</dimen>
 </resources>
