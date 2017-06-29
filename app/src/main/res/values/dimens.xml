@@ -8,4 +8,8 @@
     <dimen name="restaurant_name_size">20sp</dimen>
     <dimen name="restaurant_info_padding_start">10dp</dimen>
     <dimen name="restaurant_address_size">15sp</dimen>
+    <dimen name="like_button_height">96dp</dimen>
+    <dimen name="like_button_width">96dp</dimen>
+    <dimen name="dislike_button_width">96dp</dimen>
+    <dimen name="dislike_button_height">96dp</dimen>
 </resources>
