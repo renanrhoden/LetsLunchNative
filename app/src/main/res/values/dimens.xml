@@ -12,4 +12,5 @@
     <dimen name="like_button_width">96dp</dimen>
     <dimen name="dislike_button_width">96dp</dimen>
     <dimen name="dislike_button_height">96dp</dimen>
+    <dimen name="bottom_bar_height">20dp</dimen>
 </resources>

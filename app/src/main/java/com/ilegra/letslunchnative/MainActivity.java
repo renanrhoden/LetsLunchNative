@@ -2,6 +2,7 @@ package com.ilegra.letslunchnative;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,19 +22,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private Context mContext;
     private Activity mActivity;
     private String urlImage;
-    private JSONArray[] result;
+    private JSONArray result;
+    private TextView header;
     private TextView restaurantName;
     private TextView restaurantAddress;
     private ImageView restaurantImage;
     ImageLoader imageLoader;
     private int restaurantPosition = 0;
 
-    String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=restaurant&keyword=cruise&key=AIzaSyCp5OnViFVhTyj9R-3RuyWgyCaAGlbxdms";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,59 +47,50 @@ public class MainActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mActivity = MainActivity.this;
 
-        TextView header = (TextView) findViewById(R.id.toolbarHeaderId);
+        header = (TextView) findViewById(R.id.toolbarHeaderId);
         restaurantName = (TextView) findViewById(R.id.restaurantNameId);
         restaurantAddress = (TextView) findViewById(R.id.restaurantAddressId);
         restaurantImage = (ImageView) findViewById(R.id.restaurantImageId);
 
-        Typeface font = Typeface.createFromAsset(getAssets(), "font/Bitter-Bold.ttf");
-        header.setTypeface(font);
-        restaurantName.setTypeface(font);
+        setFont();
+
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .build();
         ImageLoader.getInstance().init(config);
+        imageLoader = ImageLoader.getInstance();
 
-        result = new JSONArray[1];
+        Intent intent = getIntent();
+        String jsonArray = intent.getStringExtra("result");
 
-        getFirstData();
+        try {
+            result = new JSONArray(jsonArray);
+            Log.i("Result from intent", result.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            updateRestaurantInfo();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
     }
 
-    private void getFirstData() {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            imageLoader = ImageLoader.getInstance();
-                            result[0] = response.getJSONArray("results");
-                            updateRestaurantInfo();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-// Access the RequestQueue through your singleton class.
-        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+    private void setFont() {
+        Typeface font = Typeface.createFromAsset(getAssets(), "font/Bitter-Bold.ttf");
+        header.setTypeface(font);
+        restaurantName.setTypeface(font);
     }
 
     private void updateRestaurantInfo() throws JSONException {
-        restaurantName.setText(result[0].getJSONObject(restaurantPosition).getString("name"));
-        restaurantAddress.setText(result[0].getJSONObject(restaurantPosition).getString("vicinity"));
-        JSONArray photo = result[0].getJSONObject(restaurantPosition).getJSONArray("photos");
+        restaurantName.setText(result.getJSONObject(restaurantPosition).getString("name"));
+        restaurantAddress.setText(result.getJSONObject(restaurantPosition).getString("vicinity"));
+        JSONArray photo = result.getJSONObject(restaurantPosition).getJSONArray("photos");
+        restaurantImage.setImageResource(R.color.colorAccent);
         imageLoader.displayImage(getUrlForImage(getPhotoReference(photo, "photo_reference")), restaurantImage);
         restaurantPosition++;
     }
