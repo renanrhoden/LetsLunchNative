@@ -44,6 +44,7 @@
         android:layout_marginEnd="@dimen/restaurant_info_margin"
         android:layout_marginStart="@dimen/restaurant_info_margin"
         android:layout_marginTop="20dp"
+        android:autoText="false"
         android:background="@color/colorPrimaryDark"
         android:gravity="bottom"
         android:paddingStart="@dimen/restaurant_info_padding_start"

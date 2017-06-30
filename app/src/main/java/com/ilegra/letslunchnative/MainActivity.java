@@ -1,33 +1,26 @@
 package com.ilegra.letslunchnative;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 
 public class MainActivity extends AppCompatActivity {
 
-    private Context mContext;
-    private Activity mActivity;
-    private String urlImage;
     private JSONArray result;
     private TextView header;
     private TextView restaurantName;
@@ -43,17 +36,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the application context
-        mContext = getApplicationContext();
-        mActivity = MainActivity.this;
-
         header = (TextView) findViewById(R.id.toolbarHeaderId);
         restaurantName = (TextView) findViewById(R.id.restaurantNameId);
         restaurantAddress = (TextView) findViewById(R.id.restaurantAddressId);
         restaurantImage = (ImageView) findViewById(R.id.restaurantImageId);
 
         setFont();
-
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
@@ -66,18 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             result = new JSONArray(jsonArray);
-            Log.i("Result from intent", result.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
             updateRestaurantInfo();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void setFont() {
@@ -90,9 +70,31 @@ public class MainActivity extends AppCompatActivity {
         restaurantName.setText(result.getJSONObject(restaurantPosition).getString("name"));
         restaurantAddress.setText(result.getJSONObject(restaurantPosition).getString("vicinity"));
         JSONArray photo = result.getJSONObject(restaurantPosition).getJSONArray("photos");
-        restaurantImage.setImageResource(R.color.colorAccent);
-        imageLoader.displayImage(getUrlForImage(getPhotoReference(photo, "photo_reference")), restaurantImage);
+        imageLoader.displayImage(getUrlForImage(getPhotoReference(photo, "photo_reference")), restaurantImage, null,  new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+                restaurantImage.setImageResource(R.color.colorAccent);
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                Animation anim = AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.fade_in);
+                restaurantImage.setAnimation(anim);
+                anim.start();
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+
+            }
+        });
         restaurantPosition++;
+
     }
 
     private String getPhotoReference(JSONArray photo, String photo_reference) throws JSONException {
@@ -102,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     private String getUrlForImage(String reference){
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
         String myKey = "&key=AIzaSyCp5OnViFVhTyj9R-3RuyWgyCaAGlbxdms";
-
 
         return url + reference + myKey;
     }
