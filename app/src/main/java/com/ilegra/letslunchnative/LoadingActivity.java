@@ -55,7 +55,6 @@ public class LoadingActivity extends AppCompatActivity {
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            Log.i("found location", location.toString());
                             getFirstData(getRestaurantRequestUrl(location));
                         }
                     }
@@ -73,8 +72,8 @@ public class LoadingActivity extends AppCompatActivity {
                             result = response.getJSONArray("results");
                             Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
                             intent.putExtra("result", result.toString());
-                            Log.i("Result", result.toString());
                             startActivity(intent);
+                            overridePendingTransition( android.R.anim.slide_in_left, android.R.anim.slide_out_right );
 
                         } catch (JSONException e) {
                             e.printStackTrace();
