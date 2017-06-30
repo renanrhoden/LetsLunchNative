@@ -19,6 +19,8 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private JSONArray result;
@@ -28,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView restaurantImage;
     ImageLoader imageLoader;
     private int restaurantPosition = 0;
-
-
+    private Restaurant restaurant;
+    private ArrayList<Restaurant> restaurants;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         restaurantName = (TextView) findViewById(R.id.restaurantNameId);
         restaurantAddress = (TextView) findViewById(R.id.restaurantAddressId);
         restaurantImage = (ImageView) findViewById(R.id.restaurantImageId);
+        restaurants = new ArrayList<>();
 
         setFont();
 
@@ -67,32 +70,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateRestaurantInfo() throws JSONException {
-        restaurantName.setText(result.getJSONObject(restaurantPosition).getString("name"));
-        restaurantAddress.setText(result.getJSONObject(restaurantPosition).getString("vicinity"));
-        JSONArray photo = result.getJSONObject(restaurantPosition).getJSONArray("photos");
-        imageLoader.displayImage(getUrlForImage(getPhotoReference(photo, "photo_reference")), restaurantImage, null,  new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-                restaurantImage.setImageResource(R.color.colorAccent);
-            }
+        if (result.getJSONObject(restaurantPosition).has("photos")) {
+            final String name = result.getJSONObject(restaurantPosition).getString("name");
+            final String address = result.getJSONObject(restaurantPosition).getString("vicinity");
+            JSONArray photo = result.getJSONObject(restaurantPosition).getJSONArray("photos");
 
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            restaurant = new Restaurant(name, address, getPhotoReference(photo, "photo_reference"));
+            restaurants.add(restaurant);
 
-            }
+            restaurantName.setText(name);
+            restaurantAddress.setText(address);
+            imageLoader.displayImage(getUrlForImage(getPhotoReference(photo, "photo_reference")), restaurantImage, null,  new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String imageUri, View view) {
+                    restaurantImage.setImageResource(R.color.colorAccent);
+                }
 
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                Animation anim = AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.fade_in);
-                restaurantImage.setAnimation(anim);
-                anim.start();
-            }
+                @Override
+                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
 
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
+                }
 
-            }
-        });
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    Animation anim = AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.fade_in);
+                    restaurantImage.setAnimation(anim);
+                    anim.start();
+                }
+
+                @Override
+                public void onLoadingCancelled(String imageUri, View view) {
+
+                }
+            });
+        }
         restaurantPosition++;
 
     }
@@ -109,6 +120,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLikeClick(View view){
+        if (result.length() - 1 < restaurantPosition) {
+            Intent intent = new Intent(MainActivity.this, FinalActivity.class);
+            //intent.putExtra("restaurantsArray", restaurants);
+            startActivity(intent);
+        }
         try {
             updateRestaurantInfo();
         } catch (JSONException e) {
