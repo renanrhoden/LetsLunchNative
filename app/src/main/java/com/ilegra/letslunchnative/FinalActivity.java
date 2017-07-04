@@ -1,17 +1,16 @@
 package com.ilegra.letslunchnative;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Space;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -47,7 +46,9 @@ public class FinalActivity extends AppCompatActivity {
         for (int i = 0; i < names.length; i++){
             TextView restaurantName = (TextView) getLayoutInflater().inflate(R.layout.custom_textview, null);
             TextView restaurantAddress = new TextView(this);
-            final ImageView restaurantImage = (ImageView) getLayoutInflater().inflate(R.layout.restaurant_small_image, null);
+            final ImageView restaurantImage = (ImageView) getLayoutInflater().inflate(R.layout.restaurant_small_image, (ViewGroup)findViewById(R.id.likedRestaurantsLinearLayoutId), false);
+
+
             imageLoader.displayImage(getUrlForImage(photoReferences[i]), restaurantImage, null,  new ImageLoadingListener() {
                 @Override
                 public void onLoadingStarted(String imageUri, View view) {
@@ -56,7 +57,7 @@ public class FinalActivity extends AppCompatActivity {
 
                 @Override
                 public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-
+                    restaurantImage.setImageResource(R.color.colorAccent);
                 }
 
                 @Override
