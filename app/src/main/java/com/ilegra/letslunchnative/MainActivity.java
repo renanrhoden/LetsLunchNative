@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private int restaurantPosition = 0;
     private Restaurant restaurant;
     private ArrayList<Restaurant> restaurants;
+    private String[] restaurantsName;
+    private String[] restaurantsAddress;
+    private String[] restaurantsPhotoReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,15 +123,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLikeClick(View view){
-        if (result.length() - 1 < restaurantPosition) {
+        if (10 < restaurantPosition) {
             Intent intent = new Intent(MainActivity.this, FinalActivity.class);
-            //intent.putExtra("restaurantsArray", restaurants);
+            getArraysOfData();
+            intent.putExtra("name", restaurantsName);
+            intent.putExtra("addresses", restaurantsAddress);
+            intent.putExtra("photoReferences", restaurantsPhotoReference);
             startActivity(intent);
         }
         try {
             updateRestaurantInfo();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+    private void getArraysOfData(){
+        int i = 0;
+        restaurantsName = new String[restaurants.size()];
+        restaurantsAddress = new String[restaurants.size()];
+        restaurantsPhotoReference = new String[restaurants.size()];
+        for (Restaurant restaurant :
+                restaurants) {
+            restaurantsName[i] = restaurant.getName();
+            restaurantsAddress[i] = restaurant.getAddress();
+            restaurantsPhotoReference[i] = restaurant.getPhotoReference();
+            i++;
         }
     }
 
