@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_marginBottom="20dp"
+    android:layout_marginEnd="@dimen/restaurant_info_margin"
+    android:layout_marginRight="20dp"
+    android:layout_marginStart="@dimen/restaurant_info_margin"
+    android:layout_marginTop="20dp"
+    android:background="@color/colorPrimaryDark"
+    android:gravity="bottom"
+    android:paddingEnd="@dimen/restaurant_info_padding_start"
+    android:paddingStart="@dimen/restaurant_info_padding_start"
+    android:textColor="@android:color/white"
+    android:textSize="@dimen/restaurant_name_size" />
